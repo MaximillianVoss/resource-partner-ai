@@ -1,0 +1,73 @@
+{% extends "portal/base.html" %}
+
+{% block title %}Кабинет менеджера{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <div>
+        <h1>Кабинет менеджера</h1>
+        <p>Заявки из портала превращаются в задачи Bitrix24 без ручного переноса данных.</p>
+    </div>
+    <div class="stat-inline">
+        <strong>{{ kpi.reserved_count }}</strong>
+        <span>лотов в брони</span>
+    </div>
+</div>
+
+<section class="panel">
+    <h2>Ожидают подтверждения</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Клиент</th>
+                    <th>Риелтор</th>
+                    <th>Лот</th>
+                    <th>Оплата</th>
+                    <th>Маржа</th>
+                    <th>Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in pending_bookings %}
+                    <tr>
+                        <td>{{ booking.lead.full_name }}<br><small>{{ booking.lead.phone }}</small></td>
+                        <td>{{ booking.realtor.full_name }}<br><small>{{ booking.realtor.agency.name }}</small></td>
+                        <td>{{ booking.lot.project }}, кв. {{ booking.lot.apartment_number }}</td>
+                        <td>{{ booking.get_payment_type_display }}</td>
+                        <td>{{ booking.expected_extra_margin|floatformat:0 }} руб.</td>
+                        <td class="actions">
+                            <form method="post" action="{% url 'portal:approve_booking' booking.id %}">
+                                {% csrf_token %}
+                                <button class="button compact primary" type="submit">Подтвердить</button>
+                            </form>
+                            <form method="post" action="{% url 'portal:reject_booking' booking.id %}">
+                                {% csrf_token %}
+                                <button class="button compact danger" type="submit">Отклонить</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="6">Нет заявок на подтверждение.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="panel">
+    <h2>История обработанных заявок</h2>
+    <div class="booking-grid">
+        {% for booking in processed_bookings %}
+            <article class="booking-card">
+                <span class="status {{ booking.status }}">{{ booking.get_status_display }}</span>
+                <h3>{{ booking.lot.project }}, кв. {{ booking.lot.apartment_number }}</h3>
+                <p>{{ booking.lead.full_name }} · {{ booking.realtor.full_name }}</p>
+                <small>{{ booking.created_at|date:"d.m.Y H:i" }}</small>
+            </article>
+        {% empty %}
+            <p class="muted">История пока пуста.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

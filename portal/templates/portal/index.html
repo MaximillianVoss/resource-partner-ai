@@ -1,0 +1,62 @@
+{% extends "portal/base.html" %}
+
+{% block title %}Resource Partner AI - MVP{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <h1>Агентский портал для продаж ЖК через партнерскую сеть</h1>
+        <p>
+            MVP показывает, как ГК «Ресурс» может заменить ручные запросы в мессенджерах
+            цифровой PRM-системой: защита сделки, витрина лотов, бронирование, KPI и AI-помощник.
+        </p>
+        <div class="hero-actions">
+            <a class="button primary" href="{% url 'portal:select_role' 'agent' %}">Открыть кабинет агента</a>
+            <a class="button ghost" href="{% url 'portal:rop' %}">Посмотреть KPI</a>
+        </div>
+    </div>
+    <div class="hero-panel">
+        <div class="panel-row">
+            <span>Защищенные лиды</span>
+            <strong>{{ kpi.protected_count }}</strong>
+        </div>
+        <div class="panel-row">
+            <span>Свободные лоты</span>
+            <strong>{{ kpi.available_count }}</strong>
+        </div>
+        <div class="panel-row">
+            <span>Подтвержденные брони</span>
+            <strong>{{ kpi.approved_count }}</strong>
+        </div>
+        <div class="meter">
+            <span style="width: {{ kpi.partner_share }}%"></span>
+        </div>
+        <small>Целевая доля агентского канала: {{ kpi.partner_share }}%</small>
+    </div>
+</section>
+
+{% if not has_data %}
+<div class="empty-state">
+    <h2>Демоданные еще не загружены</h2>
+    <p>Запустите команду <code>python manage.py seed_demo</code>, затем обновите страницу.</p>
+</div>
+{% endif %}
+
+<section class="role-grid">
+    <a class="role-card" href="{% url 'portal:agent' %}">
+        <span class="role-icon">01</span>
+        <h2>Риелтор</h2>
+        <p>Заводит клиента, получает защиту сделки и бронирует свободный лот.</p>
+    </a>
+    <a class="role-card" href="{% url 'portal:manager' %}">
+        <span class="role-icon">02</span>
+        <h2>Менеджер</h2>
+        <p>Видит готовые заявки из портала и подтверждает бронь без ручного ввода.</p>
+    </a>
+    <a class="role-card" href="{% url 'portal:rop' %}">
+        <span class="role-icon">03</span>
+        <h2>РОП</h2>
+        <p>Контролирует активность агентств, конверсию, остатки и прогноз выручки.</p>
+    </a>
+</section>
+{% endblock %}

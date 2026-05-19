@@ -1,0 +1,19 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Django Server" type="Python.DjangoServer" factoryName="Django server">
+    <module name="resource_partner_ai" />
+    <option name="HOST" value="127.0.0.1" />
+    <option name="PORT" value="8000" />
+    <option name="additionalOptions" value="" />
+    <option name="browserUrl" value="http://127.0.0.1:8000/" />
+    <option name="runTestServer" value="false" />
+    <option name="environmentVariables">
+      <map />
+    </option>
+    <option name="launchJavascriptDebuger" value="false" />
+    <option name="noReload" value="false" />
+    <option name="noThreading" value="false" />
+    <option name="pythonPath" value="$PROJECT_DIR$/manage.py" />
+    <option name="trackFilePattern" value="*.py" />
+    <method v="2" />
+  </configuration>
+</component>

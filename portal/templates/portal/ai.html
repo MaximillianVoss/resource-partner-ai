@@ -1,0 +1,53 @@
+{% extends "portal/base.html" %}
+
+{% block title %}AI-помощник агента{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <div>
+        <h1>AI-помощник агента</h1>
+        <p>Прототип модуля, который помогает подобрать лот и сформировать аргументацию для клиента.</p>
+    </div>
+</div>
+
+<section class="two-column">
+    <form class="panel form-panel" method="post">
+        {% csrf_token %}
+        <h2>Бриф клиента</h2>
+        {{ form.as_p }}
+        <button class="button primary" type="submit">Сформировать рекомендацию</button>
+    </form>
+
+    <div class="panel">
+        <h2>Рекомендация</h2>
+        {% if result %}
+            <p>{{ result.summary }}</p>
+            <div class="lead-list">
+                {% for property in result.recommended %}
+                    <div class="lead-item">
+                        <strong>{{ property.project }}, кв. {{ property.apartment_number }}</strong>
+                        <span>{{ property.rooms }} · {{ property.area }} м² · {{ property.price_mln }} млн</span>
+                        <small>{% if property.is_priority %}приоритетный лот{% else %}стандартный лот{% endif %}</small>
+                    </div>
+                {% empty %}
+                    <p class="muted">Подходящих свободных лотов нет.</p>
+                {% endfor %}
+            </div>
+            <div class="ai-block">
+                <h3>Финансовый аргумент</h3>
+                <p>{{ result.finance_argument }}</p>
+            </div>
+            <div class="ai-block">
+                <h3>Ответ на возражение</h3>
+                <p>{{ result.objection_reply }}</p>
+            </div>
+            <div class="ai-block message-preview">
+                <h3>Сообщение клиенту</h3>
+                <p>{{ result.message }}</p>
+            </div>
+        {% else %}
+            <p class="muted">Заполните бриф слева. MVP использует rule-based алгоритм; позже сюда подключается LLM API.</p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

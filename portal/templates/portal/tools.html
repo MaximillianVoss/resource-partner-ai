@@ -1,0 +1,43 @@
+{% extends "portal/base.html" %}
+
+{% block title %}Обзор инструментов рынка{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <div>
+        <h1>Обзор инструментов рынка</h1>
+        <p>Раздел помогает расширить начало третьей главы: сначала сравнение вариантов, затем выбор собственного PRM-портала.</p>
+    </div>
+</div>
+
+<section class="panel">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Инструмент</th>
+                    <th>Категория</th>
+                    <th>Стоимость</th>
+                    <th>Плюсы</th>
+                    <th>Минусы</th>
+                    <th>Оценка</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tool in tools %}
+                    <tr>
+                        <td><strong>{{ tool.name }}</strong></td>
+                        <td>{{ tool.category }}</td>
+                        <td>{{ tool.implementation_cost }}</td>
+                        <td>{{ tool.strengths }}</td>
+                        <td>{{ tool.weaknesses }}</td>
+                        <td><span class="score">{{ tool.fit_score }}/10</span></td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="6">Данные не загружены. Выполните seed_demo.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

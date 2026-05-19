@@ -1,0 +1,90 @@
+{% extends "portal/base.html" %}
+
+{% block title %}Dashboard РОПа{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <div>
+        <h1>Dashboard РОПа</h1>
+        <p>Сквозная визуализация KPI агентского канала и статусов продаж.</p>
+    </div>
+    <a class="button ghost" href="{% url 'portal:tools' %}">Обзор инструментов</a>
+</div>
+
+<section class="kpi-grid">
+    <div class="kpi-card">
+        <span>Выручка по броням</span>
+        <strong>{{ kpi.approved_value_mln }} млн</strong>
+        <small>подтвержденные заявки</small>
+    </div>
+    <div class="kpi-card">
+        <span>Конверсия</span>
+        <strong>{{ kpi.conversion }}%</strong>
+        <small>лиды -> подтвержденные брони</small>
+    </div>
+    <div class="kpi-card">
+        <span>Свободные лоты</span>
+        <strong>{{ kpi.available_count }}</strong>
+        <small>витрина Profitbase</small>
+    </div>
+    <div class="kpi-card">
+        <span>Доля агентов</span>
+        <strong>{{ kpi.partner_share }}%</strong>
+        <small>целевой B2B-канал</small>
+    </div>
+</section>
+
+<section class="two-column">
+    <div class="panel">
+        <h2>Здоровье партнерской сети</h2>
+        <div class="bar-list">
+            {% for agency in agency_activity %}
+                <div class="bar-row">
+                    <div>
+                        <strong>{{ agency.name }}</strong>
+                        <small>{{ agency.leads_count }} лидов · {{ agency.bookings_count }} броней</small>
+                    </div>
+                    <div class="bar-track">
+                        <span style="width: {% widthratio agency.bookings_count 6 100 %}%"></span>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="muted">Нет активности агентств.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Приоритетные лоты</h2>
+        <div class="lead-list">
+            {% for property in priority_properties %}
+                <div class="lead-item">
+                    <strong>{{ property.project }}, кв. {{ property.apartment_number }}</strong>
+                    <span>{{ property.rooms }} · {{ property.area }} м² · {{ property.price_mln }} млн</span>
+                    <small>{{ property.get_status_display }}</small>
+                </div>
+            {% empty %}
+                <p class="muted">Нет приоритетных лотов.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="panel">
+    <h2>Маркетинговые весы</h2>
+    <div class="comparison">
+        <div>
+            <span>Direct CAC</span>
+            <strong>383 тыс. руб.</strong>
+            <div class="meter danger-meter"><span style="width: 100%"></span></div>
+            <small>авансовый риск рекламного бюджета</small>
+        </div>
+        <div>
+            <span>Partner Success Fee</span>
+            <strong>3-4%</strong>
+            <div class="meter"><span style="width: 35%"></span></div>
+            <small>оплата после факта сделки</small>
+        </div>
+    </div>
+</section>
+{% endblock %}

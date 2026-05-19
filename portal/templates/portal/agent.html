@@ -1,0 +1,140 @@
+{% extends "portal/base.html" %}
+
+{% block title %}Кабинет агента{% endblock %}
+
+{% block content %}
+<div class="page-heading">
+    <div>
+        <h1>Кабинет агента</h1>
+        <p>{{ realtor.full_name }} · {{ realtor.agency.name }} · статус {{ realtor.get_tier_display }}</p>
+    </div>
+    <a class="button primary" href="{% url 'portal:ai' %}">Открыть AI-помощника</a>
+</div>
+
+<section class="two-column">
+    <form class="panel form-panel" method="post" action="{% url 'portal:protect_lead' %}">
+        {% csrf_token %}
+        <h2>Защита сделки</h2>
+        <p class="muted">Проверка уникальности клиента имитирует запрос в Bitrix24.</p>
+        {{ lead_form.as_p }}
+        <button class="button primary" type="submit">Проверить и закрепить</button>
+    </form>
+
+    <div class="panel">
+        <h2>Активные клиенты</h2>
+        <div class="lead-list">
+            {% for lead in active_leads %}
+                <div class="lead-item">
+                    <strong>{{ lead.full_name }}</strong>
+                    <span>{{ lead.phone }}</span>
+                    <small>защита до {{ lead.protected_until|date:"d.m.Y" }}</small>
+                </div>
+            {% empty %}
+                <p class="muted">Пока нет защищенных клиентов.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="toolbar">
+    <form class="filter-form" method="get">
+        <select name="project">
+            <option value="">Все проекты</option>
+            {% for project in projects %}
+                <option value="{{ project }}" {% if request.GET.project == project %}selected{% endif %}>{{ project }}</option>
+            {% endfor %}
+        </select>
+        <select name="status">
+            <option value="">Все статусы</option>
+            {% for value, label in status_choices %}
+                <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <select name="rooms">
+            <option value="">Любая комнатность</option>
+            <option value="1" {% if request.GET.rooms == "1" %}selected{% endif %}>1-комн.</option>
+            <option value="2" {% if request.GET.rooms == "2" %}selected{% endif %}>2-комн.</option>
+            <option value="3" {% if request.GET.rooms == "3" %}selected{% endif %}>3-комн.</option>
+            <option value="4" {% if request.GET.rooms == "4" %}selected{% endif %}>4-комн.</option>
+        </select>
+        <button class="button ghost" type="submit">Фильтр</button>
+    </form>
+</section>
+
+<section class="panel">
+    <div class="section-head">
+        <div>
+            <h2>Шахматка и бронирование</h2>
+            <p class="muted">Статусы и цены имитируют поток данных из Profitbase.</p>
+        </div>
+    </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Проект</th>
+                    <th>Кв.</th>
+                    <th>Этаж</th>
+                    <th>Площадь</th>
+                    <th>Цена</th>
+                    <th>Статус</th>
+                    <th>Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for property in properties %}
+                    <tr>
+                        <td>
+                            <strong>{{ property.project }}</strong>
+                            {% if property.is_priority %}<span class="chip accent">4% комиссия</span>{% endif %}
+                        </td>
+                        <td>{{ property.apartment_number }} · {{ property.rooms }}</td>
+                        <td>{{ property.floor }}</td>
+                        <td>{{ property.area }} м²</td>
+                        <td>{{ property.price_mln }} млн</td>
+                        <td><span class="status {{ property.status }}">{{ property.get_status_display }}</span></td>
+                        <td>
+                            {% if property.status == "available" and active_leads %}
+                                <form class="inline-form" method="post" action="{% url 'portal:create_booking' property.id %}">
+                                    {% csrf_token %}
+                                    <select name="lead_id" aria-label="Клиент">
+                                        {% for lead in active_leads %}
+                                            <option value="{{ lead.id }}">{{ lead.full_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <select name="payment_type" aria-label="Форма оплаты">
+                                        <option value="installment">Рассрочка</option>
+                                        <option value="mortgage">Ипотека</option>
+                                        <option value="cash">100%</option>
+                                    </select>
+                                    <button class="button compact" type="submit">Бронь</button>
+                                </form>
+                            {% else %}
+                                <span class="muted">Недоступно</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="7">Нет лотов по выбранным фильтрам.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="panel">
+    <h2>Мои последние брони</h2>
+    <div class="booking-grid">
+        {% for booking in recent_bookings %}
+            <article class="booking-card">
+                <span class="status {{ booking.status }}">{{ booking.get_status_display }}</span>
+                <h3>{{ booking.lot.project }}, кв. {{ booking.lot.apartment_number }}</h3>
+                <p>{{ booking.lead.full_name }} · {{ booking.get_payment_type_display }}</p>
+                <small>Комиссия: {{ booking.commission_amount|floatformat:0 }} руб.</small>
+            </article>
+        {% empty %}
+            <p class="muted">Броней пока нет.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
