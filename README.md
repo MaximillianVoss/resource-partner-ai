@@ -1,5 +1,22 @@
 # Resource Partner AI
 
+<!-- codex-repo-note:start -->
+## Справка о репозитории / Repository note
+
+**RU:** AI-помощник для планирования и подбора ресурсов.
+
+**EN:** an AI assistant for resource planning and matching.
+
+**Статус / Status:** активный проект 2026 года; ожидает ревизии README и кода. / active 2026 project; README and code review are pending.
+
+**Текущее имя / Current name:** `resource-partner-ai`
+
+**Плановое имя / Planned name:** `resource-partner-ai`
+
+**Topics:** `ai`, `cleanup-pending`, `needs-review`, `python`, `resource-planning`, `status-active`, `type-app`
+<!-- codex-repo-note:end -->
+
+
 MVP B2B AI SaaS-портала для агентского канала продаж застройщика ГК «Ресурс».
 
 ## Что реализовано
